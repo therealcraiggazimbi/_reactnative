@@ -1,9 +1,36 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, FlatList } from "react-native";
-import DayListItem from "./src/components/core/DayListItem";
+import { StyleSheet, View, FlatList, ActivityIndicator } from "react-native";
+import DayListItem from "../components/core/DayListItem";
 
-export default function App() {
+import { useFonts, Inter_900Black } from "@expo-google-fonts/inter";
+import {
+  AmaticSC_400Regular,
+  AmaticSC_700Bold,
+} from "@expo-google-fonts/amatic-sc";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
+
+export default function HomeScreen() {
   const days = [...new Array(24)].map((val, index) => index + 1);
+
+  const [fontsLoaded, fontError] = useFonts({
+    Inter: Inter_900Black,
+    Amatic: AmaticSC_400Regular,
+    AmaticBold: AmaticSC_700Bold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
@@ -14,12 +41,6 @@ export default function App() {
         numColumns={2}
         renderItem={({ item }) => <DayListItem day={item} />}
       />
-
-      {
-        //  days.map((day)=>(     <View style={styles.box}>
-        //   <Text style={styles.text}>{day}</Text>
-        //  </View>))
-      }
       <StatusBar style="auto" />
     </View>
   );
